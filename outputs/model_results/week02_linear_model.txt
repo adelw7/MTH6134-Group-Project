@@ -1,0 +1,19 @@
+
+Call:
+lm(formula = minutes_played ~ age, data = players)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2423.37  -510.94     3.05   516.99  1434.66 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 2616.048    187.259  13.970   <2e-16 ***
+age           -3.023      7.384  -0.409    0.682    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 710.5 on 618 degrees of freedom
+Multiple R-squared:  0.0002712,	Adjusted R-squared:  -0.001346 
+F-statistic: 0.1677 on 1 and 618 DF,  p-value: 0.6823
+
