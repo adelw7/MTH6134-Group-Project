@@ -46,9 +46,23 @@ This is a non-negative numerical variable.
 - Position
 - Training load
 
-**Proposed model:** Normal linear regression as an initial approach.
+**Proposed model:** Gaussian GLM with an identity link (normal linear regression) as an initial approach.
 
-We would need to examine the response distribution and model diagnostics before deciding whether this model is appropriate.
+Minutes played is a duration recorded in whole minutes, not an event count. A Gaussian model assumes approximately normal errors around the conditional mean and constant conditional error variance. The overall response distribution does not itself have to be normal. Residual diagnostics would help assess these assumptions.
+
+## 4. Assumptions and modelling choices
+
+- The logit link keeps fitted injury probabilities between zero and one; one trial per player gives a Bernoulli response.
+- The log link keeps expected goal counts positive. A Poisson model assumes equal conditional mean and variance, given the predictors. Raw mean and variance comparisons alone do not validate it.
+- Training load and opponent rank are ordinal variables. Entering them numerically assumes the same change in the linear predictor for each one-unit increase. Treating them as factors is an alternative, but requires more parameters.
+- Final opponent rank describes the completed season. The proposed match analysis is retrospective, not a forecast using information available before a fixture.
+- Season-total minutes played may be affected by injury. It is therefore omitted from the initial injury-predictor list.
+- Players share club environments, and matches may share opponents. Independence is a provisional assumption to revisit later in the module.
+- These observational associations in simulated data do not establish causation.
+
+## 5. Week 3 scope
+
+The brief asks us to identify responses, explanatory variables and outcome types. This note addresses that activity; a separate Week 3 R script or new fitted model is not necessary. Week 2 exploration is reproduced by `code/data_exploration.R`. The existing `code/first_model.R` is preliminary Week 4 binary-regression work, and is retained in the project history. Count-regression fitting is suggested for Week 6.
 
 ## Conclusion
 
