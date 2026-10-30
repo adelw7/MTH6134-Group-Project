@@ -39,3 +39,29 @@ table(players$injured)
 hist(matches$goals_scored,
      main = "Goals Scored by Ashford United",
      xlab = "Goals Scored")
+# 10. Classify variables
+str(players)
+str(matches)
+
+# Convert categorical variables to factors
+players$team <- factor(players$team)
+players$position <- factor(players$position)
+matches$home_away <- factor(matches$home_away)
+
+# 11. Explore age and minutes played
+plot(players$age, players$minutes_played,
+     main = "Age vs Minutes Played",
+     xlab = "Player Age",
+     ylab = "Minutes Played")
+
+# 12. Fit a normal linear regression model
+model_week2 <- lm(minutes_played ~ age,
+                  data = players)
+
+summary(model_week2)
+
+# 13. Add fitted regression line
+abline(model_week2, col = "red")
+
+# 14. Model diagnostics
+plot(model_week2)
