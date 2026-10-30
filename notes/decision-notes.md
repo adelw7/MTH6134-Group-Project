@@ -1,7 +1,7 @@
 # MTH6134 Statistical Modelling II
 ## Group Project - Decision Notes
 
-### Week 5: Initial Project Setup
+### Initial Project Setup
 
 **Dataset:** Midland Premier League 2023/24
 
