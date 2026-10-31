@@ -53,3 +53,8 @@ The model had an R-squared value of 0.0002712, meaning that age explained approx
 Residual diagnostics suggested some departures from normality in the tails and identified potentially unusual observations.
 
 **Decision:** Retain the model as an initial exploratory example, while acknowledging its limited explanatory power.
+
+
+### Week 3: model-planning draft for group review
+
+Retain `notes/week03-glm-planning.md` as the single Week 3 planning note. It proposes Bernoulli/logit for injury, Poisson/log for goals, and Gaussian/identity for minutes played. The note now states the conditional assumptions and the limitations of ordinal predictors, season-total minutes and grouped observations. No additional model has been fitted as part of these edits.
