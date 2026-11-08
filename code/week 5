@@ -1,0 +1,57 @@
+# Load the match data
+matches <- read.csv("/ashford_matches.csv")
+# Inspect the dataset
+head(matches)
+str(matches)
+summary(matches)
+# Set Away as the reference category
+matches$home_away <- factor(
+matches$home_away,
+levels = c("Away", "Home")
+)
+# Compare mean goals scored by venue
+aggregate(
+goals_scored ~ home_away,
+data = matches,
+FUN = mean
+)
+# Fit the Poisson regression model
+model1 <- glm(
+goals_scored ~ home_away + opponent_rank,
+family = poisson(link = "log"),
+data = matches
+)
+# Examine coefficients and significance
+summary(model1)
+# Convert coefficients to rate ratios
+exp(coef(model1))
+# Examine goodness-of-fit statistics
+deviance(model1)
+df.residual(model1)
+# Calculate Pearson dispersion estimate
+sum(residuals(model1, type = "pearson")^2) /
+df.residual(model1)
+# Fit alternative models for comparison
+model_home <- glm(
+goals_scored ~ home_away,
+family = poisson,
+data = matches
+)
+model_rank <- glm(
+goals_scored ~ opponent_rank,
+family = poisson,
+data = matches
+)
+# Likelihood-ratio tests
+anova(model_home, model1, test = "Chisq")
+anova(model_rank, model1, test = "Chisq")
+# Compare models using AIC
+AIC(model_home, model_rank, model1)
+# Calculate rate ratios and Wald confidence intervals
+b <- coef(model1)
+se <- sqrt(diag(vcov(model1)))
+round(cbind(
+Rate_Ratio = exp(b),
+Lower = exp(b - 1.96 * se),
+Upper = exp(b + 1.96 * se)
+), 3)
