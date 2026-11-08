@@ -1,0 +1,272 @@
+ # Check the dataset
+> matches <- read.csv("/ashford_matches.csv")
+
+> str(matches)
+'data.frame':   46 obs. of  4 variables:
+ $ home_away     : chr  "Home" "Home" "Home" "Home" ...
+ $ goals_scored  : int  2 0 1 2 3 0 0 8 1 2 ...
+ $ goals_conceded: int  1 1 0 0 1 2 0 0 1 0 ...
+ $ opponent_rank : int  1 3 4 6 20 2 18 24 7 23 ...
+
+> summary(matches)
+     home_away   goals_scored   goals_conceded   opponent_rank  
+ Length   :46   Min.   :0.000   Min.   :0.0000   Min.   : 1.00  
+ N.unique : 2   1st Qu.:0.000   1st Qu.:0.0000   1st Qu.: 6.25  
+ N.blank  : 0   Median :1.000   Median :1.0000   Median :13.00  
+ Min.nchar: 4   Mean   :1.304   Mean   :0.8261   Mean   :12.65  
+ Max.nchar: 4   3rd Qu.:2.000   3rd Qu.:1.0000   3rd Qu.:18.75  
+                Max.   :8.000   Max.   :3.0000   Max.   :24.00  
+
+> # Set Away as the reference category
+> matches$home_away <- factor(
++   matches$home_away,
++   levels = c("Away", "Home")
++ )
+
+> # Compare average goals scored
+> aggregate(goals_scored ~ home_away,
++           data = matches, FUN = mean)
+  home_away goals_scored
+1      Away    0.8695652
+2      Home    1.7391304
+
+> # Fit the Poisson regression model
+> model1 <- glm(
++   goals_scored ~ home_away + opponent_rank,
++   family = poisson(link = "log"),
++   data = matches
++ )
+
+> # View the model results
+> summary(model1)
+
+Call:
+glm(formula = goals_scored ~ home_away + opponent_rank, family = poisson(link = "log"), 
+    data = matches)
+
+Coefficients:
+              Estimate Std. Error z value Pr(>|z|)   
+(Intercept)   -0.89880    0.37052  -2.426  0.01528 * 
+home_awayHome  0.69315    0.27386   2.531  0.01137 * 
+opponent_rank  0.05435    0.01939   2.802  0.00507 **
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 64.844  on 45  degrees of freedom
+Residual deviance: 49.785  on 43  degrees of freedom
+AIC: 133.43
+
+Number of Fisher Scoring iterations: 5
+
+
+> # Calculate rate ratios
+> exp(coef(model1))
+  (Intercept) home_awayHome opponent_rank 
+    0.4070565     2.0000000     1.0558519 
+
+> # Check goodness of fit
+> deviance(model1)
+[1] 49.7845
+
+> df.residual(model1)
+[1] 43
+
+> # Check for overdispersion
+> sum(residuals(model1, type = "pearson")^2) /
++   df.residual(model1)
+[1] 0.9904079
+
+> # Models with fewer explanatory variables
+> model_home <- glm(
++   goals_scored ~ home_away,
++   family = poisson,
++   data = matches
++ )
+
+> model_rank <- glm(
++   goals_scored ~ opponent_rank,
++   family = poisson,
++   data = matches
++ )
+
+> # Likelihood-ratio tests
+> anova(model_home, model1, test = "Chisq")
+Analysis of Deviance Table
+
+Model 1: goals_scored ~ home_away
+Model 2: goals_scored ~ home_away + opponent_rank
+  Resid. Df Resid. Dev Df Deviance Pr(>Chi)   
+1        44     58.048                        
+2        43     49.785  1   8.2631 0.004046 **
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+> anova(model_rank, model1, test = "Chisq")
+Analysis of Deviance Table
+
+Model 1: goals_scored ~ opponent_rank
+Model 2: goals_scored ~ home_away + opponent_rank
+  Resid. Df Resid. Dev Df Deviance Pr(>Chi)   
+1        44     56.580                        
+2        43     49.785  1    6.796 0.009136 **
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+> # Compare AIC
+> AIC(model_home, model_rank, model1)
+           df      AIC
+model_home  2 139.6957
+model_rank  2 138.2286
+model1      3 133.4326
+
+> # Rate ratios and 95% Wald confidence intervals
+> b <- coef(model1)
+
+> se <- sqrt(diag(vcov(model1)))
+
+> round(cbind(
++   Rate_Ratio = exp(b),
++   Lower = exp(b - 1.96 * se),
++   Upper = exp(b + 1.96 * se)
++ ), 3)# Check the dataset
+              Rate_Ratio Lower Upper
+(Intercept)        0.407 0.197 0.841
+home_awayHome      2.000 1.169 3.421
+opponent_rank      1.056 1.016 1.097
+
+> str(matches)
+'data.frame':   46 obs. of  4 variables:
+ $ home_away     : Factor w/ 2 levels "Away","Home": 2 2 2 2 2 2 2 2 2 2 ...
+ $ goals_scored  : int  2 0 1 2 3 0 0 8 1 2 ...
+ $ goals_conceded: int  1 1 0 0 1 2 0 0 1 0 ...
+ $ opponent_rank : int  1 3 4 6 20 2 18 24 7 23 ...
+
+> summary(matches)
+ home_away  goals_scored   goals_conceded   opponent_rank  
+ Away:23   Min.   :0.000   Min.   :0.0000   Min.   : 1.00  
+ Home:23   1st Qu.:0.000   1st Qu.:0.0000   1st Qu.: 6.25  
+           Median :1.000   Median :1.0000   Median :13.00  
+           Mean   :1.304   Mean   :0.8261   Mean   :12.65  
+           3rd Qu.:2.000   3rd Qu.:1.0000   3rd Qu.:18.75  
+           Max.   :8.000   Max.   :3.0000   Max.   :24.00  
+
+> # Set Away as the reference category
+> matches$home_away <- factor(
++   matches$home_away,
++   levels = c("Away", "Home")
++ )
+
+> # Compare average goals scored
+> aggregate(goals_scored ~ home_away,
++           data = matches, FUN = mean)
+  home_away goals_scored
+1      Away    0.8695652
+2      Home    1.7391304
+
+> # Fit the Poisson regression model
+> model1 <- glm(
++   goals_scored ~ home_away + opponent_rank,
++   family = poisson(link = "log"),
++   data = matches
++ )
+
+> # View the model results
+> summary(model1)
+
+Call:
+glm(formula = goals_scored ~ home_away + opponent_rank, family = poisson(link = "log"), 
+    data = matches)
+
+Coefficients:
+              Estimate Std. Error z value Pr(>|z|)   
+(Intercept)   -0.89880    0.37052  -2.426  0.01528 * 
+home_awayHome  0.69315    0.27386   2.531  0.01137 * 
+opponent_rank  0.05435    0.01939   2.802  0.00507 **
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 64.844  on 45  degrees of freedom
+Residual deviance: 49.785  on 43  degrees of freedom
+AIC: 133.43
+
+Number of Fisher Scoring iterations: 5
+
+
+> # Calculate rate ratios
+> exp(coef(model1))
+  (Intercept) home_awayHome opponent_rank 
+    0.4070565     2.0000000     1.0558519 
+
+> # Check goodness of fit
+> deviance(model1)
+[1] 49.7845
+
+> df.residual(model1)
+[1] 43
+
+> # Check for overdispersion
+> sum(residuals(model1, type = "pearson")^2) /
++   df.residual(model1)
+[1] 0.9904079
+
+> # Models with fewer explanatory variables
+> model_home <- glm(
++   goals_scored ~ home_away,
++   family = poisson,
++   data = matches
++ )
+
+> model_rank <- glm(
++   goals_scored ~ opponent_rank,
++   family = poisson,
++   data = matches
++ )
+
+> # Likelihood-ratio tests
+> anova(model_home, model1, test = "Chisq")
+Analysis of Deviance Table
+
+Model 1: goals_scored ~ home_away
+Model 2: goals_scored ~ home_away + opponent_rank
+  Resid. Df Resid. Dev Df Deviance Pr(>Chi)   
+1        44     58.048                        
+2        43     49.785  1   8.2631 0.004046 **
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+> anova(model_rank, model1, test = "Chisq")
+Analysis of Deviance Table
+
+Model 1: goals_scored ~ opponent_rank
+Model 2: goals_scored ~ home_away + opponent_rank
+  Resid. Df Resid. Dev Df Deviance Pr(>Chi)   
+1        44     56.580                        
+2        43     49.785  1    6.796 0.009136 **
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+> # Compare AIC
+> AIC(model_home, model_rank, model1)
+           df      AIC
+model_home  2 139.6957
+model_rank  2 138.2286
+model1      3 133.4326
+
+> # Rate ratios and 95% Wald confidence intervals
+> b <- coef(model1)
+
+> se <- sqrt(diag(vcov(model1)))
+
+> round(cbind(
++   Rate_Ratio = exp(b),
++   Lower = exp(b - 1.96 * se),
++   Upper = exp(b + 1.96 * se)
++ ), 3)
+              Rate_Ratio Lower Upper
+(Intercept)        0.407 0.197 0.841
+home_awayHome      2.000 1.169 3.421
+opponent_rank      1.056 1.016 1.097
