@@ -1,0 +1,23 @@
+# Load the player dataset
+players <- read.csv(file.choose())
+
+# Look at the first six rows
+head(players)
+
+# Check the dataset dimensions
+dim(players)
+
+# Check the variable names
+names(players)
+
+# Check the structure of the data
+str(players)
+table(players$injured)
+prop.table(table(players$injured)) * 100
+# Fit a binomial logistic regression model
+injury_model <- glm(injured ~ training_load,
+                    family = binomial,
+                    data = players)
+
+# Display the model results
+summary(injury_model)
