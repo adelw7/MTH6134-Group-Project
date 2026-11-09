@@ -40,3 +40,14 @@ Residual deviance: 583.27  on 618  degrees of freedom
 AIC: 587.27
 
 Number of Fisher Scoring iterations: 4
+ predict(injury_model,
++         newdata = data.frame(training_load = 1:5),
++         type = "response")
+         1          2          3          4          5 
+0.09180514 0.12559595 0.16950289 0.22481282 0.29182886 
+> plot(1:5, c(0.09180514, 0.12559595, 0.16950289,
++             0.22481282, 0.29182886),
++      type = "b",
++      xlab = "Training Load",
++      ylab = "Predicted Probability of Injury",
++      main = "Predicted Injury Probability by Training Load")
