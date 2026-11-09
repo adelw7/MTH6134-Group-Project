@@ -1,0 +1,99 @@
+[1] "home_away"      "goals_scored"   "goals_conceded" "opponent_rank" 
+> "opponent_rank"
+[1] "opponent_rank"
+> matches <- read.csv(file.choose())
+> head(matches)
+  home_away goals_scored goals_conceded opponent_rank
+1      Home            2              1             1
+2      Home            0              1             3
+3      Home            1              0             4
+4      Home            2              0             6
+5      Home            3              1            20
+6      Home            0              2             2
+> summary(matches)
+     home_away   goals_scored   goals_conceded   opponent_rank  
+ Length   :46   Min.   :0.000   Min.   :0.0000   Min.   : 1.00  
+ N.unique : 2   1st Qu.:0.000   1st Qu.:0.0000   1st Qu.: 6.25  
+ N.blank  : 0   Median :1.000   Median :1.0000   Median :13.00  
+ Min.nchar: 4   Mean   :1.304   Mean   :0.8261   Mean   :12.65  
+ Max.nchar: 4   3rd Qu.:2.000   3rd Qu.:1.0000   3rd Qu.:18.75  
+                Max.   :8.000   Max.   :3.0000   Max.   :24.00  
+> aggregate(goals_scored ~ home_away,
++           data = matches,
++           mean)
+  home_away goals_scored
+1      Away    0.8695652
+2      Home    1.7391304
+> summary(poisson_model)
+Error: object 'poisson_model' not found
+
+> 
+> ls()
+ [1] "ashford_matches" "coefs"           "crime"           "injury_model"    "league_players" 
+ [6] "matches"         "model"           "model1"          "model2"          "model3"         
+[11] "players"         "rates"           "results"         "se"              "v"              
+> summary(poisson_model)
+Error: object 'poisson_model' not found
+
+> class(matches)
+[1] "data.frame"
+> names(matches)
+[1] "home_away"      "goals_scored"   "goals_conceded" "opponent_rank" 
+> head(matches)
+  home_away goals_scored goals_conceded opponent_rank
+1      Home            2              1             1
+2      Home            0              1             3
+3      Home            1              0             4
+4      Home            2              0             6
+5      Home            3              1            20
+6      Home            0              2             2
+> poisson_model <- glm(goals_scored ~ home_away + opponent_rank,
++                      family = "poisson",
++                      data = matches)
+> ls()
+ [1] "ashford_matches" "coefs"           "crime"           "injury_model"    "league_players" 
+ [6] "matches"         "model"           "model1"          "model2"          "model3"         
+[11] "players"         "poisson_model"   "rates"           "results"         "se"             
+[16] "v"              
+> summary(poisson_model)
+
+Call:
+glm(formula = goals_scored ~ home_away + opponent_rank, family = "poisson", 
+    data = matches)
+
+Coefficients:
+              Estimate Std. Error z value Pr(>|z|)   
+(Intercept)   -0.89880    0.37052  -2.426  0.01528 * 
+home_awayHome  0.69315    0.27386   2.531  0.01137 * 
+opponent_rank  0.05435    0.01939   2.802  0.00507 **
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 64.844  on 45  degrees of freedom
+Residual deviance: 49.785  on 43  degrees of freedom
+AIC: 133.43
+
+Number of Fisher Scoring iterations: 5
+
+> exp(coef(poisson_model))
+  (Intercept) home_awayHome opponent_rank 
+    0.4070565     2.0000000     1.0558519 
+> deviance(poisson_model) / df.residual(poisson_model)
+[1] 1.157779
+> boxplot(goals_scored ~ home_away,
++         data = matches,
++         main = "Goals Scored at Home and Away",
++         xlab = "Match Location",
++         ylab = "Number of Goals Scored",
++         col = "lightblue")
+> plot(matches$opponent_rank,
++      matches$goals_scored,
++      main = "Goals Scored Against Different Opponents",
++      xlab = "Opponent League Rank",
++      ylab = "Goals Scored",
++      pch = 19)
+> dev.off()
+null device 
+          1 
