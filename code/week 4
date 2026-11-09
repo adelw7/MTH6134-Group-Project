@@ -21,3 +21,15 @@ injury_model <- glm(injured ~ training_load,
 
 # Display the model results
 summary(injury_model)
+# Calculate odds ratios
+exp(coef(injury_model))
+injury_model
+predict(injury_model,
+        newdata = data.frame(training_load = 1:5),
+        type = "response")
+plot(1:5, c(0.09180514, 0.12559595, 0.16950289,
+            0.22481282, 0.29182886),
+     type = "b",
+     xlab = "Training Load",
+     ylab = "Predicted Probability of Injury",
+     main = "Predicted Injury Probability by Training Load")
