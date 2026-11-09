@@ -1,0 +1,44 @@
+names(matches)
+"home_away"
+"goals_scored"
+"goals_conceded"
+"opponent_rank"
+matches <- read.csv(file.choose())
+head(matches)
+summary(matches)
+aggregate(goals_scored ~ home_away,
+          data = matches,
+          mean)
+class(matches)
+names(matches)
+head(matches)
+poisson_model <- glm(goals_scored ~ home_away + opponent_rank,
+                     family = "poisson",
+                     data = matches)
+ls()
+summary(poisson_model)
+exp(coef(poisson_model))
+deviance(poisson_model) / df.residual(poisson_model)
+boxplot(goals_scored ~ home_away,
+        data = matches,
+        main = "Goals Scored at Home and Away",
+        xlab = "Match Location",
+        ylab = "Number of Goals Scored",
+        col = "lightblue")
+plot(matches$opponent_rank,
+     matches$goals_scored,
+     main = "Goals Scored Against Different Opponents",
+     xlab = "Opponent League Rank",
+     ylab = "Goals Scored",
+     pch = 19)
+png("week6_graph.png",
+    width = 800,
+    height = 600)
+
+boxplot(goals_scored ~ home_away,
+        data = matches,
+        main = "Goals Scored at Home and Away",
+        xlab = "Match Location",
+        ylab = "Number of Goals Scored")
+
+dev.off()
