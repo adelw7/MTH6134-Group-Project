@@ -111,4 +111,31 @@ capture.output(
   exp(confint.default(model_reduced)),
   file = "outputs/model_results/q1_results.txt"
 )
+# Question 1 - Influence sensitivity analysis
 
+# Calculate Cook's distances
+cooks <- cooks.distance(model_reduced)
+
+# Identify the five most influential observations
+top5 <- order(cooks, decreasing = TRUE)[1:5]
+
+# Display their observation numbers and Cook's distances
+data.frame(
+  observation = top5,
+  cooks_distance = cooks[top5]
+)
+
+# Refit model excluding these five observations
+model_sensitivity <- glm(
+  injured ~ age + training_load + prev_injuries,
+  family = binomial(link = "logit"),
+  data = players[-top5, ]
+)
+
+# Compare original and sensitivity-model odds ratios
+comparison <- data.frame(
+  Original = exp(coef(model_reduced)),
+  Without_Top5 = exp(coef(model_sensitivity))
+)
+
+print(round(comparison, 3))
