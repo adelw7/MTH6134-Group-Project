@@ -144,3 +144,21 @@ The standard residual deviance chi-squared approximation is not considered a rel
 - `outputs/graphs/q1_residuals.png`
 - `outputs/graphs/q1_cooks.png`
 - `outputs/graphs/q1_calibration.png`
+
+### Question 1 — Influence Sensitivity Analysis
+
+A sensitivity analysis was conducted to assess the influence of individual observations on the selected logistic regression model.
+
+The five observations with the highest Cook's distances (238, 281, 546, 169 and 101) were temporarily excluded, and the reduced model was refitted.
+
+The estimated odds ratios changed as follows:
+
+| Predictor | Full dataset | Excluding five observations |
+|---|---:|---:|
+| Age | 1.111 | 1.139 |
+| Training load | 1.377 | 1.522 |
+| Previous injuries | 1.667 | 1.759 |
+
+All three estimated associations remained positive, although the training-load estimate showed some sensitivity to the exclusions.
+
+**Decision:** Retain the model fitted to all 620 observations, as the sensitivity analysis did not provide sufficient justification for permanently excluding these players. Acknowledge the influence of some observations as a limitation.
